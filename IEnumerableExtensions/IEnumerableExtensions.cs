@@ -110,4 +110,35 @@ public static class IEnumerableExtensions {
         list.RemoveAt(index);
         return result;
     }
+
+    /// <summary>
+    /// Gets a random selection of n items from the source sequence.
+    /// </summary>
+    /// <param name="source">source sequence</param>
+    /// <param name="n">number of items to get</param>
+    /// <typeparam name="T">type of item</typeparam>
+    /// <returns>list of n items chosen at random in a random order</returns>
+    /// <remarks>Only iterates the source once -- does not turn source into a list</remarks>
+    public static List<T> RandomSelection<T>(this IEnumerable<T> source, int n) => RandomSelection(source, n, new Random());
+
+    /// <summary>
+    /// Gets a random selection of n items from the source sequence.
+    /// </summary>
+    /// <param name="source">source sequence</param>
+    /// <param name="n">number of items to get</param>
+    /// <param name="random">random number generator to use for selection</param>
+    /// <typeparam name="T">type of item</typeparam>
+    /// <returns>list of n items chosen at random in a random order</returns>
+    /// <remarks>Only iterates the source once -- does not turn source into a list</remarks>
+    public static List<T> RandomSelection<T>(this IEnumerable<T> source, int n, Random random) {
+        int c = 0;
+        var list = new List<T>(n);
+        foreach (var item in source) {
+            if (c++ < n) 
+                list.Add(item);
+            else if (random.Next(c) < n)
+                list[random.Next(n)] = item;
+        }
+        return list;
+    }
 }

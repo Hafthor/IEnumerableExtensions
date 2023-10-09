@@ -58,4 +58,22 @@ public class IEnumerableExtensionsTests {
         Assert.AreEqual("a,b,c", string.Join(',', permutations2.First()));
         Assert.AreEqual("c,b,a", string.Join(',', permutations2.Last()));
     }
+
+    [TestMethod]
+    public void TestRandomSelection() {
+        var deck = Enumerable.Range(0, 52);
+        var hand = deck.RandomSelection(5, new Random(0));
+        Assert.AreEqual("28,39,2,23,16", string.Join(",", hand));
+
+        var statistics = new int[52];
+        int samples = 1000000;
+        for(int r = 0; r < samples; r++) {
+            hand = deck.RandomSelection(5, new Random(r));
+            foreach (var card in hand)
+                statistics[card]++;
+        }
+        double avg = statistics.Average();
+        double stDev = Math.Sqrt(statistics.Sum(x => (x - avg) * (x - avg)) / samples);
+        Assert.IsTrue(stDev < 2.0);
+    }
 }
