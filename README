@@ -1,0 +1,7 @@
+C# IEnumerable Extension Methods
+
+StreamChunks - like .Chunk but returns IEnumerable<IEnumerable<T>> with no buffering
+
+AllCombinationsOf - returns all combinations of a set of n items from a source IEnumerable<T>.
+
+AllPermutationsOf - returns all permutations of a set of n items from a source IEnumerable<T>.
