@@ -5,3 +5,5 @@ StreamChunks - like .Chunk but returns IEnumerable<IEnumerable<T>> with no buffe
 AllCombinationsOf - returns all combinations of a set of n items from a source IEnumerable<T>.
 
 AllPermutationsOf - returns all permutations of a set of n items from a source IEnumerable<T>.
+
+RandomSelection - returns a random selection of n items from a source IEnumerable<T>.
