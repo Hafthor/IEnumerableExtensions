@@ -364,4 +364,21 @@ public static class IEnumerableExtensions {
     /// <typeparam name="T">type of item</typeparam>
     /// <returns>source array from start to, but not including, end</returns>
     public static T[] Slice<T>(this T[] source, Range range) => source[range];
+    
+    /// <summary>
+    /// Returns a slice of the source string, starting at the given index and ending at the given index.
+    /// </summary>
+    /// <param name="source">source string</param>
+    /// <param name="start">starting character index to return</param>
+    /// <param name="end">ending character index (exclusive)</param>
+    /// <returns>source string from start to, but not including, end</returns>
+    public static string Slice(this string source, Index start, Index end) => source.Slice(start..end);
+    
+    /// <summary>
+    /// Returns a slice of the source string within the given range.
+    /// </summary>
+    /// <param name="source">source string</param>
+    /// <param name="range">range of characters indexes to return</param>
+    /// <returns>source string from start to, but not including, end</returns>
+    public static string Slice(this string source, Range range) => source[range];
 }

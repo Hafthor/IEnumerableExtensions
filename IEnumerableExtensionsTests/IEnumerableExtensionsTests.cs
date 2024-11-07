@@ -84,12 +84,12 @@ public class IEnumerableExtensionsTests {
 
         Range r = 3..^3;
         Assert.AreEqual("lo wo", s.Slice(r));
-        CollectionAssert.AreEqual("lo wo".ToCharArray(), s.ToCharArray().Slice(r));
+        CollectionAssert.AreEqual("lo wo".ToCharArray(), s.ToCharArray().Slice(r).ToArray());
         CollectionAssert.AreEqual("lo wo".ToImmutableList(), s.ToImmutableList().Slice(r).ToImmutableList());
 
         r = ^5..6;
         Assert.AreEqual("", s.Slice(r));
-        CollectionAssert.AreEqual(Array.Empty<char>(), s.ToCharArray().Slice(r));
+        CollectionAssert.AreEqual(Array.Empty<char>(), s.ToCharArray().Slice(r).ToArray());
         CollectionAssert.AreEqual(Array.Empty<char>(), s.ToImmutableList().Slice(r).ToImmutableList());
         
         // Test slice on IEnumerable
