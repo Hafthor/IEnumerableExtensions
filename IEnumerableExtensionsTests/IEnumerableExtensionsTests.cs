@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using IEnumerableExtensions;
 
 namespace IEnumerableExtensionsTests;
@@ -75,5 +76,59 @@ public class IEnumerableExtensionsTests {
         double avg = statistics.Average();
         double stDev = Math.Sqrt(statistics.Sum(x => (x - avg) * (x - avg)) / samples);
         Assert.IsTrue(stDev < 2.0);
+    }
+
+    [TestMethod]
+    public void TestSlice() {
+        string s = "Hello world";
+
+        Range r = 3..^3;
+        Assert.AreEqual("lo wo", s.Slice(r));
+        CollectionAssert.AreEqual("lo wo".ToCharArray(), s.ToCharArray().Slice(r));
+        CollectionAssert.AreEqual("lo wo".ToImmutableList(), s.ToImmutableList().Slice(r).ToImmutableList());
+
+        r = ^5..6;
+        Assert.AreEqual("", s.Slice(r));
+        CollectionAssert.AreEqual(Array.Empty<char>(), s.ToCharArray().Slice(r));
+        CollectionAssert.AreEqual(Array.Empty<char>(), s.ToImmutableList().Slice(r).ToImmutableList());
+        
+        // Test slice on IEnumerable
+        {
+            CollectionAssert.AreEqual(Emit().Slice(1..3).ToArray(), "el".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(..3).ToArray(), "Hel".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(1..^2).ToArray(), "el".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(1..).ToArray(), "ello".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(^4..3).ToArray(), "el".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(^4..).ToArray(), "ello".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(^4..^2).ToArray(), "el".ToCharArray());
+            CollectionAssert.AreEqual(Emit().Slice(..^2).ToArray(), "Hel".ToCharArray());
+
+            static IEnumerable<char> Emit() => "Hello".Select(c => c);
+        }
+        
+        // Testing slice streaming
+        {
+            Assert.AreEqual("HEeLl", LoggedEmitSliceLowerAndConsume(1..3)); // no lag, doesn't consume last 2
+            Assert.AreEqual("HhEeLl", LoggedEmitSliceLowerAndConsume(..3)); // no lag, doesn't consume last 2
+            Assert.AreEqual("HELLeOl", LoggedEmitSliceLowerAndConsume(1..^2)); // lag of 2
+            Assert.AreEqual("HEeLlLlOo", LoggedEmitSliceLowerAndConsume(1..)); // no lag
+            Assert.AreEqual("HELLOel", LoggedEmitSliceLowerAndConsume(^4..3)); // read to end
+            Assert.AreEqual("HELLOello", LoggedEmitSliceLowerAndConsume(^4..)); // read to end
+            Assert.AreEqual("HELLOel", LoggedEmitSliceLowerAndConsume(^4..^2)); // read to end
+            Assert.AreEqual("HELhLeOl", LoggedEmitSliceLowerAndConsume(..^2)); // lag of 2
+
+            static string LoggedEmitSliceLowerAndConsume(Range range) {
+                string actionLog = "";
+                LoggedEmit(LoggedEmit("HELLO").Slice(range).Select(char.ToLower)).All(_ => true);
+                return actionLog;
+
+                IEnumerable<char> LoggedEmit(IEnumerable<char> source) {
+                    return source.Select(c => {
+                        actionLog += c;
+                        return c;
+                    });
+                }
+            }
+        }
     }
 }
